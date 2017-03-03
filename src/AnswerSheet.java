@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import processing.core.PImage;
 
 /***
@@ -5,19 +8,23 @@ import processing.core.PImage;
  */
 public class AnswerSheet {
 	private PImage image;
-	private String[] answers;
+	private List<String> answers;
 
-	public AnswerSheet(PImage image, String[] answers) {
+	public AnswerSheet(PImage image) {
 		this.image = image;
-		this.answers = answers;
+		this.answers = new ArrayList<String>();
 	}
 
 	public PImage getImage() {
 		return image;
 	}
 
-	public String[] getAnswers() {
-		return answers;
+	public ArrayList<String> getAnswers() {
+		return (ArrayList<String>) answers;
+	}
+
+	public void addAnswer(String answer) {
+		answers.add(answer);
 	}
 
 }

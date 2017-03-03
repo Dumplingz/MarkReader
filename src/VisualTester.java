@@ -31,6 +31,7 @@ public class VisualTester extends PApplet {
 		background(255);
 		if (images.size() > 0) {
 			current_image = images.get(currentImageIndex);
+			OpticalMarkReader.processImage(current_image);
 			image(current_image, 0, 0);			// display image i
 			fill(0);
 			text(mouseX + ", " + mouseY, 50,50);
