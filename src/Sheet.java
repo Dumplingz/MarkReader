@@ -9,6 +9,10 @@ import processing.core.PImage;
 public class Sheet {
 	private PImage image;
 	private List<String> answers;
+	private int numCorrect;
+	private int numIncorrect;
+	private double percentCorrect;
+	private double percentIncorrect;
 
 	public Sheet(PImage image) {
 		this.image = image;
@@ -27,32 +31,36 @@ public class Sheet {
 		answers.add(answer);
 	}
 
-	public static void compareTwoSheets(Sheet answerSheet, Sheet studentSheet) {
-		double percentCorrect = 0, percentWrong = 0;
-		int correct = 0;
-		int wrong = 0;
-		String[] answerKey = convertArrayListToArray(answerSheet.getAnswers());
-		String[] student = convertArrayListToArray(studentSheet.getAnswers());
-		int totalQuestions = answerKey.length;
-		for (int i = 0; i < answerKey.length; i++) {
-			if (answerKey[i].equals(student[i]))
-				correct++;
-			else
-				wrong++;
+	public void compareToKey(Sheet key) {
+		ArrayList<String> answerKey = key.getAnswers();
+		ArrayList<String> studentAnswers = this.getAnswers();
+
+		int totalQuestions = answerKey.size();
+		for (int i = 0; i < answerKey.size(); i++) {
+			if (answerKey.get(i).equals(studentAnswers.get(i))) {
+				numCorrect++;
+			} else {
+				numIncorrect++;
+			}
 		}
-		percentCorrect = (double) (correct / totalQuestions);
-		percentWrong = (double) (wrong / totalQuestions);
-		System.out.println("This sheet answered " + correct + " questions correctly and " + wrong
-				+ " answers wrong out of " + totalQuestions + ". The sheet answered " + percentCorrect
-				+ " of the questions correctly and " + percentWrong + "of the questions incorrectly.");
+		percentCorrect = (((double) numCorrect) / totalQuestions);
+		percentIncorrect = (((double) numIncorrect) / totalQuestions);
 	}
 
-	public static String[] convertArrayListToArray(ArrayList<String> arr) {
-		String[] newArr = new String[arr.size()];
-		for (int i = 0; i < newArr.length; i++) {
-			newArr[i] = arr.get(i);
-		}
-		return newArr;
+	public int getNumCorrect() {
+		return numCorrect;
+	}
+
+	public int getNumIncorrect() {
+		return numIncorrect;
+	}
+
+	public double getPercentCorrect() {
+		return percentCorrect;
+	}
+
+	public double getPercentIncorrect() {
+		return percentIncorrect;
 	}
 
 }

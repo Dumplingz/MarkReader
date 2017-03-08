@@ -13,7 +13,7 @@ public class OpticalMarkReader {
 	public static final int ENDING_ROW_FOR_BUBBLES = 37;
 	public static final int LAST_QUESTION_ROW = 1384;
 	public static final int BEGINNING_COL_NEXT_QUESTION = 282;
-	public static final int ENDING_COL_FOR_BUBBLES = 188;
+	public static final int ENDING_COL_FOR_BUBBLES = 190;
 	public static final String answers = "abcde";
 
 	/***
@@ -23,16 +23,13 @@ public class OpticalMarkReader {
 	 * @param image
 	 * @return
 	 */
+
 	public Sheet processPageImage(PImage image, PApplet window) {
 		processImage(image, window);
 		Sheet AnswerSheet = new Sheet(image);
 		processAnswerSheet(image, 5, AnswerSheet);
 		return AnswerSheet;
 	}
-
-
-
-
 
 	public void processAnswerSheet(PImage image, int numBubbles, Sheet AnswerSheet) {
 		int questionNumber = 1;
@@ -99,11 +96,6 @@ public class OpticalMarkReader {
 	public int determineBubble(int r1, int c1, int r2, int c2, int numBubbles, PImage pixels) {
 		int difference = c2 - c1;
 		int stepWidth = difference / numBubbles;
-		int extraRows = difference % numBubbles;
-		if (extraRows != 0) {
-			// System.out.println("Cutting off " + extraRows + " rows because
-			// not a multiple of " + numBubbles + ".");
-		}
 		int min = Integer.MAX_VALUE;
 		int minGroup = 1;
 		for (int groups = 1; groups <= numBubbles; groups++) {
