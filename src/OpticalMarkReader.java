@@ -9,11 +9,13 @@ import processing.core.PImage;
  */
 public class OpticalMarkReader {
 	public static final int STARTING_ROW = 460;
-	public static final int STARTING_COL = 122;
+	public static final int STARTING_COL = 125;
 	public static final int ENDING_ROW_FOR_BUBBLES = 37;
-	public static final int LAST_QUESTION_ROW = 1384;
+	public static final int LAST_QUESTION_ROW = 1380;
 	public static final int BEGINNING_COL_NEXT_QUESTION = 282;
 	public static final int ENDING_COL_FOR_BUBBLES = 190;
+	public static final int PIXEL_SUBSTRACTION_TO_CORRECT_ROW = 3;
+	public static final int LAST_QUESTION_IN_COL = 25;
 	public static final String answers = "abcde";
 
 	/***
@@ -32,19 +34,17 @@ public class OpticalMarkReader {
 	}
 
 	public void processAnswerSheet(PImage image, int numBubbles, Sheet AnswerSheet) {
-		int questionNumber = 1;
 		for (int col = STARTING_COL; col < image.width; col += BEGINNING_COL_NEXT_QUESTION) {
+			int questionNumber = 1;
 			for (int row = STARTING_ROW; row < LAST_QUESTION_ROW; row += ENDING_ROW_FOR_BUBBLES) {
+				if (questionNumber % LAST_QUESTION_IN_COL == 0) row -=  PIXEL_SUBSTRACTION_TO_CORRECT_ROW;
+				questionNumber++;
 				int number = determineBubble(row, col, row + ENDING_ROW_FOR_BUBBLES, col + ENDING_COL_FOR_BUBBLES,
 						numBubbles, image);
 				String answer = answers.substring(number - 1, number);
-				System.out.println(questionNumber + ": " + answer);
 				AnswerSheet.getAnswers().add(answer);
-				questionNumber++;
 			}
-			System.out.println("one column done!");
 		}
-		System.out.println("hi");
 	}
 
 	public static void processImage(PImage image, PApplet window) {

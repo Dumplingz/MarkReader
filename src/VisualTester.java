@@ -15,7 +15,7 @@ public class VisualTester extends PApplet {
 
 	public void setup() {
 		size(w, h);
-		images = PDFHelper.getPImagesFromPdf("/omrtest2.pdf");
+		images = PDFHelper.getPImagesFromPdf("/omrtest.pdf");
 		markReader = new OpticalMarkReader();
 		answerSheets = new Sheet[images.size()];
 		answerSheet = new Sheet(current_image);
