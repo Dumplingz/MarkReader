@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import processing.core.PApplet;
 import processing.core.PImage;
 
@@ -6,6 +8,14 @@ import processing.core.PImage;
  * 
  */
 public class OpticalMarkReader {
+	public static final int STARTING_ROW = 460;
+	public static final int STARTING_COL = 122;
+	public static final int ENDING_ROW_FOR_BUBBLES = 37;
+	public static final int LAST_QUESTION_ROW = 1384;
+	public static final int BEGINNING_COL_NEXT_QUESTION = 282;
+	public static final int ENDING_COL_FOR_BUBBLES = 188;
+	public static final String answers = "abcde";
+
 	/***
 	 * Method to do optical mark reading on page image. Return an AnswerSheet
 	 * object representing the page answers.
@@ -13,45 +23,61 @@ public class OpticalMarkReader {
 	 * @param image
 	 * @return
 	 */
-	public AnswerSheet processPageImage(PImage image, PApplet window) {
+	public Sheet processPageImage(PImage image, PApplet window) {
 		processImage(image, window);
-		AnswerSheet sheet = new AnswerSheet(image);
-		for (int row = 110; row < image.height; row++) {
-			for (int col = 0; col < image.width; col++) {
+		Sheet AnswerSheet = new Sheet(image);
+		processAnswerSheet(image, 5, AnswerSheet);
+		return AnswerSheet;
+	}
 
+
+
+
+
+	public void processAnswerSheet(PImage image, int numBubbles, Sheet AnswerSheet) {
+		int questionNumber = 1;
+		for (int col = STARTING_COL; col < image.width; col += BEGINNING_COL_NEXT_QUESTION) {
+			for (int row = STARTING_ROW; row < LAST_QUESTION_ROW; row += ENDING_ROW_FOR_BUBBLES) {
+				int number = determineBubble(row, col, row + ENDING_ROW_FOR_BUBBLES, col + ENDING_COL_FOR_BUBBLES,
+						numBubbles, image);
+				String answer = answers.substring(number - 1, number);
+				System.out.println(questionNumber + ": " + answer);
+				AnswerSheet.getAnswers().add(answer);
+				questionNumber++;
 			}
+			System.out.println("one column done!");
 		}
-		return null;
+		System.out.println("hi");
 	}
 
 	public static void processImage(PImage image, PApplet window) {
 		image.filter(PImage.GRAY);
-		for (int row = 0; row < image.height; row++) {
-			for (int col = 0; col < image.width; col++) {
-				int color = image.get(col, row);
-				float grayval = (float) (window.red(color));
+		image.loadPixels();
+		int[] pixels = translatePixelsArrayFromPImageToWorking(image.pixels);
+		updatePImageWithPixels(image, pixels, window);
+	}
 
-				// System.out.println(grayval);
-				image.updatePixels();
-				color = 0;
-
-				int newVal = 100;
-
-				image.set(col, row, window.color(newVal, newVal, newVal));
-
-				// setPixelAt(row, col, color, image);
-
-				// System.out.println("row: " + row + " col: " + col + " color:
-				// " + color);
-				//
-				// if (color > 123)
-				// image.set(row, col, 2);
-				// else
-				// image.set(row, col, 0);
-				// image.set(row, col, 0);
-			}
+	/***
+	 * Take in image.pixels where color format is default PImage format
+	 * 
+	 * @param pixels
+	 * @return pixel array where color format is in 0 to 255
+	 */
+	private static int[] translatePixelsArrayFromPImageToWorking(int[] pixels) {
+		int[] out = new int[pixels.length];
+		for (int i = 0; i < pixels.length; i++) {
+			out[i] = pixels[i] & 255;
 		}
 
+		return out;
+	}
+
+	private static void updatePImageWithPixels(PImage img, int[] newpixels, PApplet window) {
+		for (int i = 0; i < newpixels.length; i++) {
+			int c = window.color(newpixels[i], newpixels[i], newpixels[i]);
+			img.pixels[i] = c;
+		}
+		img.updatePixels();
 	}
 
 	private static void setPixelAt(int row, int col, int color, PImage image) {
@@ -75,7 +101,8 @@ public class OpticalMarkReader {
 		int stepWidth = difference / numBubbles;
 		int extraRows = difference % numBubbles;
 		if (extraRows != 0) {
-			System.out.println("Cutting off " + extraRows + " rows because not a multiple of " + numBubbles + ".");
+			// System.out.println("Cutting off " + extraRows + " rows because
+			// not a multiple of " + numBubbles + ".");
 		}
 		int min = Integer.MAX_VALUE;
 		int minGroup = 1;

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Main {
@@ -27,15 +28,17 @@ public class Main {
 	 * @param images List of images corresponding to each page of original pdf
 	 */
 	private static void scoreAllPages(ArrayList<PImage> images) {
-		ArrayList<AnswerSheet> scoredSheets = new ArrayList<AnswerSheet>();
+		ArrayList<Sheet> scoredSheets = new ArrayList<Sheet>();
 
+		PApplet helper = new PApplet();
+		
 		// Score the first page as the key
-		AnswerSheet key = markReader.processPageImage(images.get(0));
+		Sheet key = markReader.processPageImage(images.get(0), helper);
 
 		for (int i = 1; i < images.size(); i++) {
 			PImage image = images.get(i);
 
-			AnswerSheet answers = markReader.processPageImage(image);
+			Sheet answers = markReader.processPageImage(image, helper);
 
 			// do something with answers
 		}
