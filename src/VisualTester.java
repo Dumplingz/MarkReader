@@ -11,13 +11,11 @@ public class VisualTester extends PApplet {
 	int h = 900;
 	OpticalMarkReader markReader;
 	Sheet answerSheet;
-	Sheet[] answerSheets;
 
 	public void setup() {
 		size(w, h);
 		images = PDFHelper.getPImagesFromPdf("/omrtest.pdf");
 		markReader = new OpticalMarkReader();
-		answerSheets = new Sheet[images.size()];
 		answerSheet = new Sheet(current_image);
 	}
 
@@ -26,7 +24,7 @@ public class VisualTester extends PApplet {
 		if (images.size() > 0) {
 			current_image = images.get(currentImageIndex);
 
-			OpticalMarkReader.processImage(current_image, this);
+			OpticalMarkReader.processImage(current_image);
 
 			image(current_image, 0, 0); // display image i
 			fill(0);

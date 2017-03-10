@@ -1,5 +1,4 @@
 
-import processing.core.PApplet;
 import processing.core.PImage;
 
 /***
@@ -24,8 +23,8 @@ public class OpticalMarkReader {
 	 * @param image
 	 * @return
 	 */
-	public Sheet processPageImage(PImage image, PApplet window) {
-		processImage(image, window);
+	public Sheet processPageImage(PImage image) {
+		processImage(image);
 		Sheet AnswerSheet = new Sheet(image);
 		processAnswerSheet(image, 5, AnswerSheet);
 		return AnswerSheet;
@@ -44,33 +43,8 @@ public class OpticalMarkReader {
 		}
 	}
 
-	public static void processImage(PImage image, PApplet window) {
+	public static void processImage(PImage image) {
 		image.filter(PImage.GRAY);
-		image.loadPixels();
-		int[] pixels = translatePixelsArrayFromPImageToWorking(image.pixels);
-		updatePImageWithPixels(image, pixels, window);
-	}
-
-	/***
-	 * Take in image.pixels where color format is default PImage format
-	 * 
-	 * @param pixels
-	 * @return pixel array where color format is in 0 to 255
-	 */
-	private static int[] translatePixelsArrayFromPImageToWorking(int[] pixels) {
-		int[] out = new int[pixels.length];
-		for (int i = 0; i < pixels.length; i++) {
-			out[i] = pixels[i] & 255;
-		}
-		return out;
-	}
-
-	private static void updatePImageWithPixels(PImage img, int[] newpixels, PApplet window) {
-		for (int i = 0; i < newpixels.length; i++) {
-			int c = window.color(newpixels[i], newpixels[i], newpixels[i]);
-			img.pixels[i] = c;
-		}
-		img.updatePixels();
 	}
 
 	public static int getPixelAt(int row, int col, PImage image) {

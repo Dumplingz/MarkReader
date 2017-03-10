@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-
-import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Main {
@@ -32,31 +30,32 @@ public class Main {
 	private static void scoreAllPages(ArrayList<PImage> images) {
 		ArrayList<Sheet> scoredSheets = new ArrayList<Sheet>();
 
-		String[] keyInfoColNames = { "#correct", "#wrong", "%correct", "%wrong", "totalQuestions" };
-		String[] itemAnalysisColNames = { "Problem#", "# of Students who got problem wrong", "% of Students who got problem wrong"};
-
-		CSVData keyInfo = new CSVData("E:\\workspace\\MarkReader\\out\\answerKeyInfo", keyInfoColNames);
-		CSVData itemAnalysis = new CSVData("E:\\workspace\\MarkReader\\out\\itemInfo", itemAnalysisColNames);
-
-		PApplet helper = new PApplet();
-
-		Sheet key = markReader.processPageImage(images.get(0), helper);
-
-		double[][] keyData = new double[images.size()][keyInfoColNames.length];
-		double[][] itemData = new double[key.getAnswers().size()][itemAnalysisColNames.length];
-
-		createKeyDataCSVFile(images, helper, key, keyData, scoredSheets);
-		keyInfo.setData(keyData);
-
-		createItemAnalysisCSVFile(key, itemData, scoredSheets);
-		itemAnalysis.setData(itemData);
-
-		keyInfo.saveToFile("E:\\workspace\\MarkReader\\out\\answerKeyInfo");
-		itemAnalysis.saveToFile("E:\\workspace\\MarkReader\\out\\itemInfo");
-
+		Sheet key = markReader.processPageImage(images.get(0));
+		
+		createKeyInfoCSVFile(images, key, scoredSheets);
+		createItemAnalysisCSVFile(images, key, scoredSheets);
 	}
 	
-	public static void createItemAnalysisCSVFile(Sheet key, double[][] itemData, ArrayList<Sheet> scoredSheets) {
+	public static void createKeyInfoCSVFile(ArrayList<PImage> images, Sheet key, ArrayList<Sheet> scoredSheets) {
+		String[] keyInfoColNames = { "#correct", "#wrong", "%correct", "%wrong", "totalQuestions" };
+		CSVData keyInfo = new CSVData("E:\\workspace\\MarkReader\\out\\answerKeyInfo", keyInfoColNames);
+		double[][] keyData = new double[images.size()][keyInfoColNames.length];
+		fillKeyDataCSVFile(images, key, keyData, scoredSheets);
+		keyInfo.setData(keyData);
+		keyInfo.saveToFile("E:\\workspace\\MarkReader\\out\\answerKeyInfo");
+	}
+	
+	public static void createItemAnalysisCSVFile(ArrayList<PImage> images, Sheet key, ArrayList<Sheet> scoredSheets) {
+		String[] itemAnalysisColNames = { "Problem#", "# of Students who got problem wrong", "% of Students who got problem wrong"};
+		CSVData itemAnalysis = new CSVData("E:\\workspace\\MarkReader\\out\\itemInfo", itemAnalysisColNames);
+		double[][] itemData = new double[key.getAnswers().size()][itemAnalysisColNames.length];
+		fillItemAnalysisCSVFile(key, itemData, scoredSheets);
+		itemAnalysis.setData(itemData);
+		itemAnalysis.saveToFile("E:\\workspace\\MarkReader\\out\\itemInfo");
+		
+	}
+	
+	public static void fillItemAnalysisCSVFile(Sheet key, double[][] itemData, ArrayList<Sheet> scoredSheets) {
 		for (int i = 0; i < key.getAnswers().size(); i++) {
 			itemData[i][0] = i + 1;
 			int numIncorrect = 0;
@@ -71,11 +70,11 @@ public class Main {
 		}
 	}
 	
-	public static void createKeyDataCSVFile(ArrayList<PImage> images, PApplet helper, Sheet key, double[][] keyData, ArrayList<Sheet> scoredSheets) {
+	public static void fillKeyDataCSVFile(ArrayList<PImage> images, Sheet key, double[][] keyData, ArrayList<Sheet> scoredSheets) {
 		for (int i = 0; i < images.size(); i++) {
 			PImage image = images.get(i);
 
-			Sheet answer = markReader.processPageImage(image, helper);
+			Sheet answer = markReader.processPageImage(image);
 			answer.compareToKey(key);
 			keyData[i][0] = answer.getNumCorrect();
 			keyData[i][1] = answer.getNumIncorrect();
