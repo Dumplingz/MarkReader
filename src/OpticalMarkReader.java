@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 
 import processing.core.PApplet;
 import processing.core.PImage;
@@ -25,7 +24,6 @@ public class OpticalMarkReader {
 	 * @param image
 	 * @return
 	 */
-
 	public Sheet processPageImage(PImage image, PApplet window) {
 		processImage(image, window);
 		Sheet AnswerSheet = new Sheet(image);
@@ -39,8 +37,7 @@ public class OpticalMarkReader {
 			for (int row = STARTING_ROW; row < LAST_QUESTION_ROW; row += ENDING_ROW_FOR_BUBBLES) {
 				if (questionNumber % LAST_QUESTION_IN_COL == 0) row -=  PIXEL_SUBSTRACTION_TO_CORRECT_ROW;
 				questionNumber++;
-				int number = determineBubble(row, col, row + ENDING_ROW_FOR_BUBBLES, col + ENDING_COL_FOR_BUBBLES,
-						numBubbles, image);
+				int number = determineBubble(row, col, row + ENDING_ROW_FOR_BUBBLES, col + ENDING_COL_FOR_BUBBLES, numBubbles, image);
 				String answer = answers.substring(number - 1, number);
 				AnswerSheet.getAnswers().add(answer);
 			}
@@ -65,7 +62,6 @@ public class OpticalMarkReader {
 		for (int i = 0; i < pixels.length; i++) {
 			out[i] = pixels[i] & 255;
 		}
-
 		return out;
 	}
 
@@ -77,29 +73,17 @@ public class OpticalMarkReader {
 		img.updatePixels();
 	}
 
-	private static void setPixelAt(int row, int col, int color, PImage image) {
-		image.loadPixels();
-
-		int index = row * image.width + col;
-
-		image.pixels[index] = (color << 16) + (color << 8) + color;
-	}
-
 	public static int getPixelAt(int row, int col, PImage image) {
 		image.loadPixels();
-
 		int index = row * image.width + col;
-
 		return image.pixels[index] & 255;
 	}
 
-	public int determineBubble(int r1, int c1, int r2, int c2, int numBubbles, PImage pixels) {
-		int difference = c2 - c1;
-		int stepWidth = difference / numBubbles;
-		int min = Integer.MAX_VALUE;
-		int minGroup = 1;
+	public int determineBubble(int startRow, int startCol, int endRow, int endCol, int numBubbles, PImage pixels) {
+		int difference = endCol - startCol, stepWidth = difference / numBubbles, min = Integer.MAX_VALUE, minGroup = 1;
+		
 		for (int groups = 1; groups <= numBubbles; groups++) {
-			int values = getSum(r1, c1 + ((groups - 1) * stepWidth), r2, c1 + (groups * stepWidth), pixels);
+			int values = getSum(startRow, startCol + ((groups - 1) * stepWidth), endRow, startCol + (groups * stepWidth), pixels);
 			if (values < min) {
 				minGroup = groups;
 				min = values;
@@ -108,10 +92,10 @@ public class OpticalMarkReader {
 		return minGroup;
 	}
 
-	private int getSum(int r1, int c1, int r2, int c2, PImage pixels) {
+	private int getSum(int startRow, int startCol, int endRow, int endCol, PImage pixels) {
 		int values = 0;
-		for (int i = r1; i < r2; i++) {
-			for (int j = c1; j < c2; j++) {
+		for (int i = startRow; i < endRow; i++) {
+			for (int j = startCol; j < endCol; j++) {
 				values += getPixelAt(i, j, pixels);
 			}
 		}

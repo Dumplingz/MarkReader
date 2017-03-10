@@ -22,7 +22,6 @@ public class VisualTester extends PApplet {
 	}
 
 	public void draw() {
-
 		background(255);
 		if (images.size() > 0) {
 			current_image = images.get(currentImageIndex);
@@ -33,26 +32,27 @@ public class VisualTester extends PApplet {
 			fill(0);
 			text(mouseX + ", " + mouseY, 50, 50);
 			fill(100);
-
-			for (int c = 0; c < current_image.width - 120; c += 282) {
-
-				// starting and ending index points for looping
-				for (int r = 0; r < current_image.height - 460; r += 37) {
-					rect(c + 122, r + 460, 1, 1);
-					rect(c + 310, r + 497, 1, 1);
-				}
-				rect(122 + c, (current_image.height - 1), 8, 8);
-				rect(310 + c, (current_image.height - 1), 8, 8);
-			}
+			
+			drawSquareIndices(); // starting and ending index points for looping
 		}
 	}
 
 	public void mouseReleased() {
 		currentImageIndex = (currentImageIndex + 1) % images.size();
-		// increment current image
 	}
 
 	public void keyReleased() {
 		markReader.processAnswerSheet(current_image, 5, answerSheet);
+	}
+	
+	public void drawSquareIndices() {
+		for (int c = 0; c < current_image.width - 120; c += 282) {
+			for (int r = 0; r < current_image.height - 460; r += 37) {
+				rect(c + 122, r + 460, 1, 1);
+				rect(c + 310, r + 497, 1, 1);
+			}
+			rect(122 + c, (current_image.height - 1), 8, 8);
+			rect(310 + c, (current_image.height - 1), 8, 8);
+		}
 	}
 }
